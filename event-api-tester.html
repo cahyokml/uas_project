@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .config {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .config label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .config input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .panel {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        
+        .btn-info {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #3182ce;
+        }
+        
+        .response {
+            background: #1a202c;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .response pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .events-list {
+            margin-top: 20px;
+        }
+        
+        .event-card {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .event-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .event-card p {
+            color: #718096;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .badge-upcoming { background: #bee3f8; color: #2c5282; }
+        .badge-ongoing { background: #c6f6d5; color: #22543d; }
+        .badge-completed { background: #e2e8f0; color: #2d3748; }
+        .badge-cancelled { background: #fed7d7; color: #742a2a; }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-card h4 {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Event API Tester</h1>
+            <p>Test & Monitor Event Management API</p>
+        </div>
+        
+        <div class="config">
+            <label for="apiUrl">API URL:</label>
+            <input type="text" id="apiUrl" value="http://localhost/api.php" placeholder="http://localhost/api.php">
+        </div>
+        
+        <div class="grid">
+            <!-- Left Panel: Create Event -->
+            <div class="panel">
+                <h2>➕ Create Event</h2>
+                <div class="form-group">
+                    <label>Nama Event *</label>
+                    <input type="text" id="title" placeholder="Workshop Laravel">
+                </div>
+                <div class="form-group">
+                    <label>Tanggal *</label>
+                    <input type="date" id="date">
+                </div>
+                <div class="form-group">
+                    <label>Waktu *</label>
+                    <input type="time" id="time">
+                </div>
+                <div class="form-group">
+                    <label>Lokasi *</label>
+                    <input type="text" id="location" placeholder="Jakarta Convention Center">
+                </div>
+                <div class="form-group">
+                    <label>Deskripsi</label>
+                    <textarea id="description" rows="3" placeholder="Deskripsi event..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Kapasitas</label>
+                    <input type="number" id="capacity" placeholder="100">
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="status">
+                        <option value="upcoming">Akan Datang</option>
+                        <option value="ongoing">Sedang Berlangsung</option>
+                        <option value="completed">Selesai</option>
+                        <option value="cancelled">Dibatalkan</option>
+                    </select>
+                </div>
+                <button class="btn btn-success" onclick="createEvent()">✅ Create Event</button>
+                <button class="btn btn-primary" onclick="clearForm()">🔄 Clear Form</button>
+                
+                <div id="createResponse" class="response" style="display:none;">
+                    <pre id="createResponseText"></pre>
+                </div>
+            </div>
+            
+            <!-- Right Panel: Actions -->
+            <div class="panel">
+                <h2>🔧 Quick Actions</h2>
+                
+                <h3 style="margin-top: 0; color: #4a5568;">Get Events</h3>
+                <button class="btn btn-primary" onclick="getAllEvents()">📋 Get All Events</button>
+                <button class="btn btn-info" onclick="getStatistics()">📊 Get Statistics</button>
+                
+                <h3 style="margin-top: 20px; color: #4a5568;">Get by ID</h3>
+                <div class="form-group">
+                    <input type="text" id="getEventId" placeholder="Event ID">
+                </div>
+                <button class="btn btn-primary" onclick="getEventById()">🔍 Get Event</button>
+                
+                <h3 style="margin-top: 20px; color: #4a5568;">Update Event</h3>
+                <div class="form-group">
+                    <input type="text" id="updateEventId" placeholder="Event ID">
+                </div>
+                <button class="btn btn-info" onclick="loadEventForUpdate()">📝 Load for Update</button>
+                <button class="btn btn-success" onclick="updateEvent()">💾 Update Event</button>
+                
+                <h3 style="margin-top: 20px; color: #4a5568;">Delete Event</h3>
+                <div class="form-group">
+                    <input type="text" id="deleteEventId" placeholder="Event ID">
+                </div>
+                <button class="btn btn-danger" onclick="deleteEvent()">🗑️ Delete Event</button>
+                
+                <div id="actionResponse" class="response" style="display:none;">
+                    <pre id="actionResponseText"></pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="panel" style="margin-top: 20px;">
+            <h2>📊 Statistics</h2>
+            <div id="statsContainer" class="stats"></div>
+        </div>
+        
+        <!-- Events List -->
+        <div class="panel" style="margin-top: 20px;">
+            <h2>📋 Events List</h2>
+            <button class="btn btn-primary" onclick="getAllEvents()">🔄 Refresh</button>
+            <div id="eventsList" class="events-list"></div>
+        </div>
+    </div>
+
+    <script>
+        function getApiUrl() {
+            return document.getElementById('apiUrl').value;
+        }
+        
+        function showResponse(elementId, data) {
+            const el = document.getElementById(elementId);
+            const textEl = document.getElementById(elementId + 'Text');
+            textEl.textContent = JSON.stringify(data, null, 2);
+            el.style.display = 'block';
+        }
+        
+        async function createEvent() {
+            const data = {
+                title: document.getElementById('title').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                location: document.getElementById('location').value,
+                description: document.getElementById('description').value,
+                capacity: document.getElementById('capacity').value,
+                status: document.getElementById('status').value
+            };
+            
+            try {
+                const response = await fetch(getApiUrl(), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                showResponse('createResponse', result);
+                
+                if (response.ok) {
+                    alert('✅ Event berhasil dibuat!');
+                    clearForm();
+                    getAllEvents();
+                }
+            } catch (error) {
+                showResponse('createResponse', { error: error.message });
+            }
+        }
+        
+        async function getAllEvents() {
+            const listEl = document.getElementById('eventsList');
+            listEl.innerHTML = '<div class="loading">⏳ Loading...</div>';
+            
+            try {
+                const response = await fetch(getApiUrl());
+                const result = await response.json();
+                
+                if (result.data && result.data.length > 0) {
+                    listEl.innerHTML = result.data.map(event => `
+                        <div class="event-card">
+                            <h3>${event.title}</h3>
+                            <p>🆔 ID: ${event.id}</p>
+                            <p>📅 ${event.date} | ⏰ ${event.time}</p>
+                            <p>📍 ${event.location}</p>
+                            ${event.description ? `<p>📝 ${event.description}</p>` : ''}
+                            ${event.capacity ? `<p>👥 Kapasitas: ${event.capacity} orang</p>` : ''}
+                            <span class="badge badge-${event.status}">${getStatusLabel(event.status)}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    listEl.innerHTML = '<p style="text-align:center; color:#999;">Tidak ada event</p>';
+                }
+            } catch (error) {
+                listEl.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function getEventById() {
+            const id = document.getElementById('getEventId').value;
+            if (!id) {
+                alert('Masukkan Event ID!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${getApiUrl()}?id=${id}`);
+                const result = await response.json();
+                showResponse('actionResponse', result);
+            } catch (error) {
+                showResponse('actionResponse', { error: error.message });
+            }
+        }
+        
+        async function loadEventForUpdate() {
+            const id = document.getElementById('updateEventId').value;
+            if (!id) {
+                alert('Masukkan Event ID!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${getApiUrl()}?id=${id}`);
+                const result = await response.json();
+                
+                if (result.data) {
+                    const event = result.data;
+                    document.getElementById('title').value = event.title;
+                    document.getElementById('date').value = event.date;
+                    document.getElementById('time').value = event.time;
+                    document.getElementById('location').value = event.location;
+                    document.getElementById('description').value = event.description || '';
+                    document.getElementById('capacity').value = event.capacity || '';
+                    document.getElementById('status').value = event.status;
+                    alert('✅ Event loaded! Edit dan klik Update Event');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        async function updateEvent() {
+            const id = document.getElementById('updateEventId').value;
+            if (!id) {
+                alert('Masukkan Event ID!');
+                return;
+            }
+            
+            const data = {
+                title: document.getElementById('title').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                location: document.getElementById('location').value,
+                description: document.getElementById('description').value,
+                capacity: document.getElementById('capacity').value,
+                status: document.getElementById('status').value
+            };
+            
+            try {
+                const response = await fetch(`${getApiUrl()}?id=${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                showResponse('actionResponse', result);
+                
+                if (response.ok) {
+                    alert('✅ Event berhasil diupdate!');
+                    getAllEvents();
+                }
+            } catch (error) {
+                showResponse('actionResponse', { error: error.message });
+            }
+        }
+        
+        async function deleteEvent() {
+            const id = document.getElementById('deleteEventId').value;
+            if (!id) {
+                alert('Masukkan Event ID!');
+                return;
+            }
+            
+            if (!confirm('Yakin ingin menghapus event ini?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${getApiUrl()}?id=${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                showResponse('actionResponse', result);
+                
+                if (response.ok) {
+                    alert('✅ Event berhasil dihapus!');
+                    getAllEvents();
+                }
+            } catch (error) {
+                showResponse('actionResponse', { error: error.message });
+            }
+        }
+        
+        async function getStatistics() {
+            const container = document.getElementById('statsContainer');
+            container.innerHTML = '<div class="loading">⏳ Loading...</div>';
+            
+            try {
+                const response = await fetch(`${getApiUrl()}?stats=1`);
+                const result = await response.json();
+                
+                if (result.data) {
+                    const stats = result.data;
+                    container.innerHTML = `
+                        <div class="stat-card">
+                            <h4>${stats.total || 0}</h4>
+                            <p>Total Events</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>${stats.upcoming || 0}</h4>
+                            <p>Akan Datang</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>${stats.ongoing || 0}</h4>
+                            <p>Berlangsung</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>${stats.completed || 0}</h4>
+                            <p>Selesai</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                container.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        function clearForm() {
+            document.getElementById('title').value = '';
+            document.getElementById('date').value = '';
+            document.getElementById('time').value = '';
+            document.getElementById('location').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('capacity').value = '';
+            document.getElementById('status').value = 'upcoming';
+        }
+        
+        function getStatusLabel(status) {
+            const labels = {
+                upcoming: 'Akan Datang',
+                ongoing: 'Berlangsung',
+                completed: 'Selesai',
+                cancelled: 'Dibatalkan'
+            };
+            return labels[status] || status;
+        }
+        
+        // Load events on page load
+        window.onload = function() {
+            getAllEvents();
+            getStatistics();
+        };
+    </script>
+</body>
+</html>

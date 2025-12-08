@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Permit cleartext (HTTP) only for the specified API host -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">104.248.153.158</domain>
+    </domain-config>
+
+    <!-- Default: disallow cleartext for other domains -->
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>
