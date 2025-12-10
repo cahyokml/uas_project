@@ -14,6 +14,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.uas_project.data.Event
 import com.example.uas_project.viewmodel.EventViewModel
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Box
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
