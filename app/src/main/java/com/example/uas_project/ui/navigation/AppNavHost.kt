@@ -2,12 +2,16 @@ package com.example.uas_project.ui.navigation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.uas_project.viewmodel.EventViewModel
+import com.example.uas_project.viewmodel.AuthViewModel
+import com.example.uas_project.ui.screens.LoginScreen
 import com.example.uas_project.ui.screens.EventDetailScreen
 import com.example.uas_project.ui.screens.EventFormScreen
 import com.example.uas_project.ui.screens.EventListScreen
@@ -22,15 +26,27 @@ object Routes {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(eventViewModel: EventViewModel) {
+fun AppNavHost(eventViewModel: EventViewModel, authViewModel: AuthViewModel) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Routes.LIST) {
+    // choose start destination based on auth state
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
+    val start = if (isLoggedIn) Routes.LIST else "login"
+
+    NavHost(navController = navController, startDestination = start) {
+        composable("login") {
+            LoginScreen(authViewModel = authViewModel, onLoginSuccess = {
+                navController.navigate(Routes.LIST) {
+                    popUpTo("login") { inclusive = true }
+                }
+            })
+        }
         composable(Routes.LIST) {
             EventListScreen(
                 viewModel = eventViewModel,
                 onOpenDetail = { id -> navController.navigate("${Routes.DETAIL_BASE}/$id") },
-                onCreate = { navController.navigate("${Routes.CREATE_BASE}?eventId=-1") }
+                onCreate = { navController.navigate("${Routes.CREATE_BASE}?eventId=-1") },
+                onLogout = { authViewModel.logout() }
             )
         }
 

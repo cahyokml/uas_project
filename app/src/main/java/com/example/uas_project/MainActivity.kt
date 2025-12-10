@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.uas_project.ui.theme.Uas_projectTheme
 import com.example.uas_project.ui.navigation.AppNavHost
 import com.example.uas_project.viewmodel.EventViewModel
+import com.example.uas_project.viewmodel.AuthViewModel
 import androidx.core.view.WindowCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
@@ -26,13 +27,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             Uas_projectTheme {
                 val eventVM: EventViewModel = viewModel()
-                AppMainScreen(eventVM)
+                val authVM: AuthViewModel = viewModel()
+                AppMainScreen(eventVM, authVM)
             }
         }
     }
 }
 
 @Composable
-fun AppMainScreen(eventViewModel: EventViewModel) {
-    AppNavHost(eventViewModel = eventViewModel)
+fun AppMainScreen(eventViewModel: EventViewModel, authViewModel: AuthViewModel) {
+    AppNavHost(eventViewModel = eventViewModel, authViewModel = authViewModel)
 }
