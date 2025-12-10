@@ -51,12 +51,14 @@ fun EventListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onCreate) {
-                Icon(Icons.Default.Add, contentDescription = "Create")
-            }
+            ExtendedFloatingActionButton(
+                text = { Text("Create") },
+                onClick = onCreate,
+                icon = { Icon(Icons.Default.Add, contentDescription = "Create") }
+            )
         }
     ) { inner ->
-        Box(modifier = modifier.padding(inner)) {
+        Box(modifier = modifier.fillMaxSize().padding(inner)) {
             if (loading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 return@Box

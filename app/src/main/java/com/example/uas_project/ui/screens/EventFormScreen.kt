@@ -17,6 +17,8 @@ import com.example.uas_project.viewmodel.EventViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,8 +49,11 @@ fun EventFormScreen(eventId: Int? = null, onSaved: () -> Unit, viewModel: EventV
 
     val loading by viewModel.loading.collectAsState()
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Create Event") }) }) { inner ->
-        Column(modifier = Modifier.padding(inner).padding(16.dp)) {
+    val scroll = rememberScrollState()
+    Scaffold(topBar = {
+        CenterAlignedTopAppBar(title = { Text(if (eventId != null) "Edit Event" else "Create Event") })
+    }) { inner ->
+        Column(modifier = Modifier.padding(inner).padding(16.dp).verticalScroll(scroll)) {
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },

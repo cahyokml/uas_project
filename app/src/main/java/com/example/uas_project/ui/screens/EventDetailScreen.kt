@@ -8,6 +8,8 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -19,6 +21,7 @@ import com.example.uas_project.viewmodel.EventViewModel
 fun EventDetailScreen(id: Int, viewModel: EventViewModel, onBack: () -> Unit, onEdit: (Int) -> Unit) {
     val event = viewModel.events.collectAsState().value.find { it.id == id }
 
+    val scroll = rememberScrollState()
     Scaffold(topBar = {
         CenterAlignedTopAppBar(
             title = { Text(text = event?.title ?: "Event") },
@@ -27,7 +30,7 @@ fun EventDetailScreen(id: Int, viewModel: EventViewModel, onBack: () -> Unit, on
             }
         )
     }) { inner ->
-        Column(modifier = Modifier.padding(inner).padding(16.dp)) {
+        Column(modifier = Modifier.padding(inner).padding(16.dp).verticalScroll(scroll)) {
             Text(text = event?.title ?: "-", style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(8.dp))
 
