@@ -23,8 +23,8 @@ class AuthRepository(private val context: Context) {
     }
 
     suspend fun login(username: String, password: String): Boolean {
-        // Demo/local login: accept any non-empty username/password.
-        val success = username.isNotBlank() && password.isNotBlank()
+        val required = "UAS_Cahyo_Satya"
+        val success = username == required && password == required
         if (success) {
             context.dataStore.edit { prefs ->
                 prefs[IS_LOGGED_IN] = true
