@@ -22,6 +22,7 @@ import com.example.uas_project.viewmodel.EventViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import com.example.uas_project.ui.theme.*
 
@@ -40,6 +41,12 @@ fun EventListScreen(
 
     LaunchedEffect(Unit) {
         viewModel.loadEvents()
+    }
+
+    // simple search state
+    var searchQuery by remember { mutableStateOf("") }
+    val displayedEvents = if (searchQuery.isBlank()) events else events.filter {
+        it.title.contains(searchQuery, ignoreCase = true)
     }
 
     val gradientColors = listOf(VibrantBlue, VibrantPurple)
@@ -109,35 +116,48 @@ fun EventListScreen(
                 return@Box
             }
 
-            if (events.isEmpty()) {
-                Column(
+            Column(modifier = Modifier.fillMaxSize()) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Search events") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    singleLine = true,
                     modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        "No events yet",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        "Create one to get started!",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(events) { e ->
-                        EventRow(event = e, onClick = { e.id?.let(onOpenDetail) })
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                )
+
+                if (displayedEvents.isEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "No events yet",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Text(
+                            "Create one to get started!",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                        )
                     }
-                    item { Spacer(modifier = Modifier.height(16.dp)) }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(displayedEvents) { e ->
+                            EventRow(event = e, onClick = { e.id?.let(onOpenDetail) })
+                        }
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
+                    }
                 }
             }
         }
