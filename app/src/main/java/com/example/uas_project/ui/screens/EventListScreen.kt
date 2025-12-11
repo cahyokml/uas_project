@@ -43,10 +43,14 @@ fun EventListScreen(
         viewModel.loadEvents()
     }
 
-    // simple search state
+    // simple search + status filter state
     var searchQuery by remember { mutableStateOf("") }
-    val displayedEvents = if (searchQuery.isBlank()) events else events.filter {
-        it.title.contains(searchQuery, ignoreCase = true)
+    var selectedFilter by remember { mutableStateOf<String?>(null) } // null = all
+    val displayedEvents = events.filter { e ->
+        val matchesQuery = searchQuery.isBlank() || (e.title?.contains(searchQuery, ignoreCase = true) == true)
+        val status = e.status ?: ""
+        val matchesFilter = selectedFilter == null || selectedFilter == "all" || status.equals(selectedFilter, ignoreCase = true)
+        matchesQuery && matchesFilter
     }
 
     val gradientColors = listOf(VibrantBlue, VibrantPurple)
@@ -127,6 +131,25 @@ fun EventListScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp, vertical = 8.dp)
                 )
+
+                // Simple filter chips: All / Upcoming / Ongoing / Completed
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val filters = listOf("all" to "All", "upcoming" to "Upcoming", "ongoing" to "Ongoing", "completed" to "Completed")
+                    filters.forEach { (key, label) ->
+                        AssistChip(
+                            onClick = { selectedFilter = if (selectedFilter == key || (key == "all" && selectedFilter == null)) null else if (key == "all") null else key },
+                            label = { Text(label, fontWeight = FontWeight.SemiBold) },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = if ((selectedFilter == null && key == "all") || selectedFilter == key) VibrantBlue else White.copy(alpha = 0.06f),
+                                labelColor = if ((selectedFilter == null && key == "all") || selectedFilter == key) White else MaterialTheme.colorScheme.onBackground
+                            )
+                        )
+                    }
+                }
 
                 if (displayedEvents.isEmpty()) {
                     Column(
