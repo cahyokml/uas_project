@@ -49,7 +49,7 @@ fun EventListScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Music Events",
+                        "Events Manager",
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 24.sp
